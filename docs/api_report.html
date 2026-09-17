@@ -1,0 +1,994 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>LeyBc COM Library - 完整 API 接口报告</title>
+<style>
+:root{--bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--text:#e6edf3;--text-muted:#8b949e;--border:#30363d;--accent:#58a6ff;--green:#3fb950;--orange:#d29922;--purple:#bc8cff;--red:#f85149}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans SC',Helvetica,Arial,sans-serif;line-height:1.6;padding:20px}
+.container{max-width:1280px;margin:0 auto}
+h1{font-size:2em;margin-bottom:8px;color:var(--accent)}
+.subtitle{color:var(--text-muted);margin-bottom:24px;font-size:0.95em}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:18px;text-align:center}
+.stat-card .num{font-size:2em;font-weight:700;color:var(--accent)}
+.stat-card .label{font-size:0.85em;color:var(--text-muted);margin-top:4px}
+.toc{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:18px 24px;margin-bottom:32px}
+.toc h3{margin-bottom:10px;color:var(--accent)}
+.toc ol{padding-left:20px}
+.toc ol li{margin:4px 0}
+.toc ol li a{color:var(--text);text-decoration:none;transition:color .2s}
+.toc ol li a:hover{color:var(--accent)}
+.section-header{margin-bottom:8px}
+.section-header h2{font-size:1.3em;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.section-body{margin-bottom:28px}
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:0.75em;font-weight:600;background:var(--bg3);color:var(--text)}
+.badge.green{background:#1a3a2a;color:var(--green)}
+.badge.blue{background:#1a2a3a;color:var(--accent)}
+.badge.orange{background:#3a2a1a;color:var(--orange)}
+.badge.purple{background:#2a1a3a;color:var(--purple)}
+table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:0.88em}
+thead{background:var(--bg3)}
+th{padding:8px 10px;text-align:left;font-weight:600;color:var(--text-muted);border-bottom:2px solid var(--border)}
+td{padding:6px 10px;border-bottom:1px solid var(--border)}
+tr:hover td{background:var(--bg2)}
+code.method{font-family:'Cascadia Code','Fira Code','Consolas',monospace;color:var(--orange);font-size:0.92em}
+.cat-header{padding:6px 10px;margin:8px 0 6px;background:var(--bg3);border-radius:4px;font-weight:600;color:var(--accent);font-size:0.9em}
+footer{text-align:center;padding:24px 0;color:var(--text-muted);font-size:0.85em;border-top:1px solid var(--border);margin-top:32px}
+</style>
+</head>
+<body><div class="container">
+
+<h1>LeyBc COM Library — 完整 API 接口报告</h1>
+<div class="subtitle">生成日期：2026-07-10 &nbsp;|&nbsp; LeyBc AI Agent</div>
+
+<div class="stats">
+<div class="stat-card"><div class="num">38</div><div class="label">COM 接口</div></div>
+<div class="stat-card"><div class="num">37</div><div class="label">CLSID 组件</div></div>
+<div class="stat-card"><div class="num">641+</div><div class="label">DISPID 方法</div></div>
+<div class="stat-card"><div class="num">1000+</div><div class="label">功能点</div></div>
+</div>
+
+<div class="toc">
+<h3>📑 目录</h3>
+<ol>
+<li><a href="#s-overview">接口总览</a></li>
+<li><a href="#s-clsid">组件 CLSID 列表</a></li>
+<li><a href="#s-ileybc">ILeyBc 统一接口</a></li>
+<li><a href="#s-text">ITextOperation — 文本操作</a></li>
+<li><a href="#s-image">IImageOperation — 图片操作</a></li>
+<li><a href="#s-window">IWindowOperation — 窗口操作</a></li>
+<li><a href="#s-process">IProcessOperation — 进程操作</a></li>
+<li><a href="#s-file">IFileOperation — 文件操作</a></li>
+<li><a href="#s-disk">IDiskOperation — 磁盘操作</a></li>
+<li><a href="#s-thread">IThreadOperation — 线程操作</a></li>
+<li><a href="#s-multi">IMultiThreadOperation — 多线程同步</a></li>
+<li><a href="#s-encoding">ITextEncoding — 编码转换</a></li>
+<li><a href="#s-crypto">ICryptoOperation — 加解密</a></li>
+<li><a href="#s-com">IComInvoke — COM 动态调用</a></li>
+<li><a href="#s-base">IBaseConversion — 进制转换</a></li>
+<li><a href="#s-time">ITimeOperation — 时间操作</a></li>
+<li><a href="#s-memory">IMemoryOperation — 内存操作</a></li>
+<li><a href="#s-asm">IAssemblyOperation — 汇编操作</a></li>
+<li><a href="#s-disasm">IDisassemblyOperation — 反汇编</a></li>
+<li><a href="#s-http">IHttpOperation — HTTP 请求</a></li>
+<li><a href="#s-dll">IDLLOperation — DLL 注入</a></li>
+<li><a href="#s-hook">IHookOperation — Hook 操作</a></li>
+<li><a href="#s-regex">IRegexOperation — 正则表达式</a></li>
+<li><a href="#s-fso">IFSOOperation — FSO 兼容</a></li>
+<li><a href="#s-sm">ISmCrypto — 国密</a></li>
+<li><a href="#s-fh">IFileHandleOperation — 文件句柄</a></li>
+<li><a href="#s-dir">IDirectoryOperation — 目录操作</a></li>
+<li><a href="#s-fx">IFileOperationEx — 文件扩展</a></li>
+<li><a href="#s-map">IFileMapping / IShareMemory</a></li>
+<li><a href="#s-js">IJScriptEngine — JS 引擎</a></li>
+<li><a href="#s-sys">系统/热键/对话框</a></li>
+<li><a href="#s-menu">IMenuOperation — 菜单操作</a></li>
+<li><a href="#s-extra">转发命名空间汇总</a></li>
+</ol>
+</div>
+
+<!-- ===================== 接口总览 ===================== -->
+<section id="s-overview">
+<div class="section-header"><h2>📋 接口总览 <span class="badge blue">38 接口</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>IID (前缀)</th><th>接口名称</th><th>方法数</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code>A1B2C3D4-...</code></td><td><b>IComponentBase</b></td><td>2</td><td>组件基础（名称/版本）</td></tr>
+<tr><td>2</td><td><code>B2C3D4E5-...</code></td><td><b>ITextOperation</b></td><td>56</td><td>文本操作（查找/替换/随机/拼音）</td></tr>
+<tr><td>3</td><td><code>C3D4E5F6-...</code></td><td><b>IImageOperation</b></td><td>10</td><td>图片操作（截图/缩放/裁切）</td></tr>
+<tr><td>4</td><td><code>D4E5F6A7-...</code></td><td><b>IWindowOperation</b></td><td>11</td><td>窗口操作（查找/枚举/消息）</td></tr>
+<tr><td>5</td><td><code>E5F6A7B8-...</code></td><td><b>IProcessOperation</b></td><td>131</td><td>进程操作（创建/注入/内存/线程）</td></tr>
+<tr><td>6</td><td><code>F6A7B8C9-...</code></td><td><b>IFileOperation</b></td><td>12</td><td>文件操作（读写/复制/枚举）</td></tr>
+<tr><td>7</td><td><code>A7B8C9D0-...</code></td><td><b>IDiskOperation</b></td><td>7</td><td>磁盘操作（容量/文件系统）</td></tr>
+<tr><td>8</td><td><code>B8C9D0E1-...</code></td><td><b>IThreadOperation</b></td><td>7</td><td>线程操作（暂停/恢复/终止）</td></tr>
+<tr><td>9</td><td><code>C9D0E1F2-...</code></td><td><b>IMultiThreadOperation</b></td><td>13</td><td>多线程（临界区/事件/信号量）</td></tr>
+<tr><td>10</td><td><code>D0E1F2A3-...</code></td><td><b>ITextEncoding</b></td><td>24</td><td>编码转换（Ansi/UTF8/Base64/URL）</td></tr>
+<tr><td>11</td><td><code>E1F2A3B4-...</code></td><td><b>ICryptoOperation</b></td><td>44</td><td>加解密（AES/RSA/DES/SHA/HMAC）</td></tr>
+<tr><td>12</td><td><code>B6C7D8E9-...</code></td><td><b>ICryptoOperationEx</b></td><td>—</td><td>加解密扩展（OpenSSL 后端）</td></tr>
+<tr><td>13</td><td><code>7C6D5E4F-...</code></td><td><b>IComInvoke</b></td><td>8</td><td>COM 动态调用（CreateObject/Invoke）</td></tr>
+<tr><td>14</td><td><code>F2A3B4C5-...</code></td><td><b>IBaseConversion</b></td><td>6</td><td>进制转换（2/8/10/16 进制互转）</td></tr>
+<tr><td>15</td><td><code>A3B4C5D6-...</code></td><td><b>ITimeOperation</b></td><td>10</td><td>时间操作（获取/格式化/定时）</td></tr>
+<tr><td>16</td><td><code>B4C5D6E7-...</code></td><td><b>IMemoryOperation</b></td><td>103</td><td>内存操作（读写/分配/指针/特征码）</td></tr>
+<tr><td>17</td><td><code>C5D6E7F8-...</code></td><td><b>IAssemblyOperation</b></td><td>17</td><td>汇编操作（X86/X64/Push/Call/Jmp）</td></tr>
+<tr><td>18</td><td><code>D6E7F8A9-...</code></td><td><b>IDisassemblyOperation</b></td><td>4</td><td>反汇编操作（反汇编/长度获取）</td></tr>
+<tr><td>19</td><td><code>3A1B2C3D-...</code></td><td><b>IHttpOperation</b></td><td>6</td><td>HTTP 请求（Get/Post/证书/Cookie）</td></tr>
+<tr><td>20</td><td><code>8F9A0B1C-...</code></td><td><b>IFileHandleOperation</b></td><td>11</td><td>文件句柄操作（打开/读写/定位）</td></tr>
+<tr><td>21</td><td><code>A0B1C2D3-...</code></td><td><b>IFSOOperation</b></td><td>25</td><td>FSO 兼容操作（Drive/Folder/File）</td></tr>
+<tr><td>22</td><td><code>C2D3E4F5-...</code></td><td><b>IRegexOperation</b></td><td>10</td><td>正则表达式（Match/Replace/Split）</td></tr>
+<tr><td>23</td><td><code>5C6D7E8F-...</code></td><td><b>IDLLOperation</b></td><td>19</td><td>DLL 操作（注入/卸载/PE/IME）</td></tr>
+<tr><td>24</td><td><code>7E8F9A0B-...</code></td><td><b>IHookOperation</b></td><td>11</td><td>Hook 操作（Inline/IAT/EAT/VEH）</td></tr>
+<tr><td>25</td><td><code>9A0B1C2D-...</code></td><td><b>IFasmOperation</b></td><td>1</td><td>FASM 汇编（单入口）</td></tr>
+<tr><td>26</td><td><code>1C2D3E4F-...</code></td><td><b>ISmCrypto</b></td><td>8</td><td>国密加密（SM2/SM3/SM4）</td></tr>
+<tr><td>27</td><td><code>3E4F5061-...</code></td><td><b>IDirectoryOperation</b></td><td>22</td><td>目录操作（Create/Copy/Enum）</td></tr>
+<tr><td>28</td><td><code>50617283-...</code></td><td><b>IFileOperationEx</b></td><td>39</td><td>文件扩展操作（Find/Icon/MIME）</td></tr>
+<tr><td>29</td><td><code>728394A5-...</code></td><td><b>ISystemOperation</b></td><td>1</td><td>系统操作（执行命令）</td></tr>
+<tr><td>30</td><td><code>01A2B3C4-...</code></td><td><b>IGlobalHotkeyOperation</b></td><td>5</td><td>全局热键（Register/Unregister）</td></tr>
+<tr><td>31</td><td><code>23C4D5E6-...</code></td><td><b>IWindowHotkeyOperation</b></td><td>3</td><td>窗口热键（Register/Unregister）</td></tr>
+<tr><td>32</td><td><code>45E6F7A8-...</code></td><td><b>IDialogOperation</b></td><td>3</td><td>对话框（OpenFile/SaveFile）</td></tr>
+<tr><td>33</td><td><code>67A8B9C0-...</code></td><td><b>IDynamicClassNameOperation</b></td><td>4</td><td>动态类名（Register/Unregister）</td></tr>
+<tr><td>34</td><td><code>89C0D1E2-...</code></td><td><b>IMenuOperation</b></td><td>15</td><td>菜单操作（Add/Delete/Enum/Icon）</td></tr>
+<tr><td>35</td><td><code>0F1E2D3C-...</code></td><td><b>IFileMapping</b></td><td>17</td><td>文件映射（Create/Map/Read/Write）</td></tr>
+<tr><td>36</td><td><code>2F3E4D5C-...</code></td><td><b>IShareMemory</b></td><td>17</td><td>共享内存（同上，不同 CLSID）</td></tr>
+<tr><td>37</td><td><code>4B2E1A3C-...</code></td><td><b>ILeyBc</b></td><td>~641</td><td>统一管理器（唯一入口，转发表）</td></tr>
+<tr><td>38</td><td><code>5A1B2C3D-...</code></td><td><b>IJScriptEngine</b></td><td>13</td><td>JavaScript 引擎（Execute/Eval/Call）</td></tr>
+</tbody></table>
+</div></section>
+
+<!-- ===================== 组件 CLSID 列表 ===================== -->
+<section id="s-clsid">
+<div class="section-header"><h2>📦 组件 CLSID 列表 <span class="badge blue">37 组件</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>CLSID</th><th>组件名</th><th>ProgID</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code>1A2B3C4D-...</code></td><td><b>CLeyBcManager</b></td><td><code>LeyBc.Manager</code></td><td><b>统一入口，推荐使用</b></td></tr>
+<tr><td>2</td><td><code>E7F8A9B0-...</code></td><td>CTextOperation</td><td>—</td><td>文本操作组件</td></tr>
+<tr><td>3</td><td><code>F8A9B0C1-...</code></td><td>CImageOperation</td><td>—</td><td>图片操作组件</td></tr>
+<tr><td>4</td><td><code>A9B0C1D2-...</code></td><td>CWindowOperation</td><td>—</td><td>窗口操作组件</td></tr>
+<tr><td>5</td><td><code>B0C1D2E3-...</code></td><td>CProcessOperation</td><td>—</td><td>进程操作组件</td></tr>
+<tr><td>6</td><td><code>C1D2E3F4-...</code></td><td>CFileOperation</td><td>—</td><td>文件操作组件</td></tr>
+<tr><td>7</td><td><code>D2E3F4A5-...</code></td><td>CDiskOperation</td><td>—</td><td>磁盘操作组件</td></tr>
+<tr><td>8</td><td><code>E3F4A5B6-...</code></td><td>CThreadOperation</td><td>—</td><td>线程操作组件</td></tr>
+<tr><td>9</td><td><code>F4A5B6C7-...</code></td><td>CMultiThreadOperation</td><td>—</td><td>多线程操作组件</td></tr>
+<tr><td>10</td><td><code>A5B6C7D8-...</code></td><td>CTextEncoding</td><td>—</td><td>编码转换组件</td></tr>
+<tr><td>11</td><td><code>B6C7D8E9-...</code></td><td>CCryptoOperation</td><td>—</td><td>加解密组件</td></tr>
+<tr><td>12</td><td><code>B6C7D8E9-...</code></td><td>COpenSSLCrypto</td><td>—</td><td>OpenSSL 3.x 后端加解密</td></tr>
+<tr><td>13</td><td><code>D9C8B7A6-...</code></td><td>CComInvoke</td><td>—</td><td>COM 动态调用组件</td></tr>
+<tr><td>14</td><td><code>C7D8E9F0-...</code></td><td>CBaseConversion</td><td>—</td><td>进制转换组件</td></tr>
+<tr><td>15</td><td><code>D8E9F0A1-...</code></td><td>CTimeOperation</td><td>—</td><td>时间操作组件</td></tr>
+<tr><td>16</td><td><code>E9F0A1B2-...</code></td><td>CMemoryOperation</td><td>—</td><td>内存操作组件</td></tr>
+<tr><td>17</td><td><code>F0A1B2C3-...</code></td><td>CAssemblyOperation</td><td>—</td><td>汇编操作组件</td></tr>
+<tr><td>18</td><td><code>A1B2C3D4-...</code></td><td>CDisassemblyOperation</td><td>—</td><td>反汇编操作组件</td></tr>
+<tr><td>19</td><td><code>4B5C6D7E-...</code></td><td>CHttpOperation</td><td><code>LeyBc.HttpOperation</code></td><td>HTTP 请求组件</td></tr>
+<tr><td>20</td><td><code>9A0B1C2D-...</code></td><td>CFileHandleOperation</td><td>—</td><td>文件句柄操作组件</td></tr>
+<tr><td>21</td><td><code>B1C2D3E4-...</code></td><td>CFSOOperation</td><td>—</td><td>FSO 兼容操作组件</td></tr>
+<tr><td>22</td><td><code>D3E4F506-...</code></td><td>CRegexOperation</td><td>—</td><td>正则表达式组件</td></tr>
+<tr><td>23</td><td><code>6D7E8F9A-...</code></td><td>CDLLOperation</td><td><code>LeyBc.DLLOperation</code></td><td>DLL 注入组件</td></tr>
+<tr><td>24</td><td><code>8F9A0B1C-...</code></td><td>CHookOperation</td><td><code>LeyBc.HookOperation</code></td><td>Hook 操作组件</td></tr>
+<tr><td>25</td><td><code>0B1C2D3E-...</code></td><td>CFasmOperation</td><td>—</td><td>FASM 汇编组件</td></tr>
+<tr><td>26</td><td><code>2D3E4F50-...</code></td><td>CSmCrypto</td><td>—</td><td>国密加密组件</td></tr>
+<tr><td>27</td><td><code>4F506172-...</code></td><td>CDirectoryOperation</td><td>—</td><td>目录操作组件</td></tr>
+<tr><td>28</td><td><code>61728394-...</code></td><td>CFileOperationEx</td><td>—</td><td>文件扩展操作组件</td></tr>
+<tr><td>29</td><td><code>8394A5B6-...</code></td><td>CSystemOperation</td><td>—</td><td>系统操作组件</td></tr>
+<tr><td>30</td><td><code>12B3C4D5-...</code></td><td>CGlobalHotkeyOperation</td><td>—</td><td>全局热键组件</td></tr>
+<tr><td>31</td><td><code>34D5E6F7-...</code></td><td>CWindowHotkeyOperation</td><td>—</td><td>窗口热键组件</td></tr>
+<tr><td>32</td><td><code>56F7A8B9-...</code></td><td>CDialogOperation</td><td>—</td><td>对话框组件</td></tr>
+<tr><td>33</td><td><code>78B9C0D1-...</code></td><td>CDynamicClassNameOperation</td><td>—</td><td>动态类名组件</td></tr>
+<tr><td>34</td><td><code>90D1E2F3-...</code></td><td>CMenuOperation</td><td>—</td><td>菜单操作组件</td></tr>
+<tr><td>35</td><td><code>1F2E3D4C-...</code></td><td>CFileMapping</td><td>—</td><td>映射文件组件</td></tr>
+<tr><td>36</td><td><code>3F4E5D6C-...</code></td><td>CShareMemory</td><td>—</td><td>共享内存组件</td></tr>
+<tr><td>37</td><td><code>6B7C8D9E-...</code></td><td>CJScriptEngine</td><td><code>LeyBc.JScriptEngine</code></td><td>JS 引擎组件</td></tr>
+</tbody></table>
+</div></section>
+
+<!-- ===================== ILeyBc ===================== -->
+<section id="s-ileybc">
+<div class="section-header"><h2>🎯 ILeyBc <span class="badge blue">~641 方法</span></h2></div>
+<div class="section-body">
+<p style="margin-bottom:12px;color:var(--text-muted);">ILeyBc 统一管理器将 34 个子模块的方法全部通过一个 <code>IDispatch</code> 接口暴露，转发表共 <strong>641 个条目</strong>。推荐作为唯一入口使用。</p>
+</div></section>
+
+<!-- ===================== ITextOperation ===================== -->
+<section id="s-text">
+<div class="section-header"><h2>📝 ITextOperation <span class="badge green">56 方法</span></h2></div>
+<div class="section-body">
+<div class="cat-header">▸ 基础文本操作 (11)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">FindText</code></td><td>2</td><td><code class="method">ReplaceText</code></td></tr>
+<tr><td>3</td><td><code class="method">SplitText</code></td><td>4</td><td><code class="method">JoinText</code></td></tr>
+<tr><td>5</td><td><code class="method">Substring</code></td><td>6</td><td><code class="method">Trim</code></td></tr>
+<tr><td>7</td><td><code class="method">ToUpper</code></td><td>8</td><td><code class="method">ToLower</code></td></tr>
+<tr><td>9</td><td><code class="method">GetLength</code></td><td>10</td><td><code class="method">EncodeBase64</code></td></tr>
+<tr><td>11</td><td><code class="method">DecodeBase64</code></td><td></td><td></td></tr>
+</tbody></table>
+<div class="cat-header">▸ 比较/提取/行操作 (19)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">Compare</code></td><td>2</td><td><code class="method">GetLeft</code></td></tr>
+<tr><td>3</td><td><code class="method">GetRight</code></td><td>4</td><td><code class="method">GetMid</code></td></tr>
+<tr><td>5</td><td><code class="method">GetMidReverse</code></td><td>6</td><td><code class="method">GetLineContaining</code></td></tr>
+<tr><td>7</td><td><code class="method">GetLineText</code></td><td>8</td><td><code class="method">RemoveLine</code></td></tr>
+<tr><td>9</td><td><code class="method">RemoveEmptyLines</code></td><td>10</td><td><code class="method">RemoveNewLines</code></td></tr>
+<tr><td>11</td><td><code class="method">PadLeftZero</code></td><td>12</td><td><code class="method">RemoveAllSpaces</code></td></tr>
+<tr><td>13</td><td><code class="method">StartsWithDigit</code></td><td>14</td><td><code class="method">IsNumeric</code></td></tr>
+<tr><td>15</td><td><code class="method">SendText</code></td><td>16</td><td><code class="method">SelectAll</code></td></tr>
+<tr><td>17</td><td><code class="method">CapitalizeFirst</code></td><td>18</td><td><code class="method">SplitLines</code></td></tr>
+<tr><td>19</td><td><code class="method">IsRepeated</code></td><td></td><td></td></tr>
+</tbody></table>
+<div class="cat-header">▸ 随机生成/拼音/统计 (10)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">RandomDigit</code></td><td>2</td><td><code class="method">RandomLetter</code></td></tr>
+<tr><td>3</td><td><code class="method">RandomChar</code></td><td>4</td><td><code class="method">RandomChinese</code></td></tr>
+<tr><td>5</td><td><code class="method">RandomSurname</code></td><td>6</td><td><code class="method">GetPinyin</code></td></tr>
+<tr><td>7</td><td><code class="method">CountOccurrences</code></td><td>8</td><td><code class="method">GetMidBatch</code></td></tr>
+<tr><td>9</td><td><code class="method">GetMidBatchRegex</code></td><td>10</td><td><code class="method">RegexEscape</code></td></tr>
+</tbody></table>
+<div class="cat-header">▸ 提取/分类/反转/朗读 (16)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">ExtractChinese</code></td><td>2</td><td><code class="method">ExtractLetters</code></td></tr>
+<tr><td>3</td><td><code class="method">ExtractDigits</code></td><td>4</td><td><code class="method">ExtractSymbols</code></td></tr>
+<tr><td>5</td><td><code class="method">SplitChars</code></td><td>6</td><td><code class="method">HasChinese</code></td></tr>
+<tr><td>7</td><td><code class="method">IsAllChinese</code></td><td>8</td><td><code class="method">IsAlpha</code></td></tr>
+<tr><td>9</td><td><code class="method">IsAllLower</code></td><td>10</td><td><code class="method">IsAllUpper</code></td></tr>
+<tr><td>11</td><td><code class="method">IsUTF8</code></td><td>12</td><td><code class="method">Reverse</code></td></tr>
+<tr><td>13</td><td><code class="method">Escape</code></td><td>14</td><td><code class="method">Speak</code></td></tr>
+</tbody></table>
+</div></section>
+
+<!-- ===================== IImageOperation ===================== -->
+<section id="s-image">
+<div class="section-header"><h2>🖼️ IImageOperation <span class="badge green">10 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">CaptureScreen</code></td><td>全屏截图</td></tr>
+<tr><td>2</td><td><code class="method">CaptureRect</code></td><td>区域截图</td></tr>
+<tr><td>3</td><td><code class="method">CaptureWindow</code></td><td>窗口截图</td></tr>
+<tr><td>4</td><td><code class="method">SaveToFile</code></td><td>保存图片到文件</td></tr>
+<tr><td>5</td><td><code class="method">LoadFromFile</code></td><td>从文件加载图片</td></tr>
+<tr><td>6</td><td><code class="method">Resize</code></td><td>缩放图片</td></tr>
+<tr><td>7</td><td><code class="method">Rotate</code></td><td>旋转图片</td></tr>
+<tr><td>8</td><td><code class="method">Crop</code></td><td>裁剪图片</td></tr>
+<tr><td>9</td><td><code class="method">GetWidth</code></td><td>获取图片宽度</td></tr>
+<tr><td>10</td><td><code class="method">GetHeight</code></td><td>获取图片高度</td></tr>
+</tbody></table>
+</div></section>
+
+<!-- ===================== IWindowOperation ===================== -->
+<section id="s-window">
+<div class="section-header"><h2>🪟 IWindowOperation <span class="badge green">11 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">FindWindowByTitle</code></td><td>按标题找窗口</td></tr>
+<tr><td>2</td><td><code class="method">FindWindowByClass</code></td><td>按类名找窗口</td></tr>
+<tr><td>3</td><td><code class="method">EnumWindows</code></td><td>枚举所有窗口</td></tr>
+<tr><td>4</td><td><code class="method">GetWindowText</code></td><td>获取窗口标题</td></tr>
+<tr><td>5</td><td><code class="method">SetWindowText</code></td><td>设置窗口标题</td></tr>
+<tr><td>6</td><td><code class="method">GetWindowRect</code></td><td>获取窗口位置大小</td></tr>
+<tr><td>7</td><td><code class="method">SetWindowRect</code></td><td>设置窗口位置大小</td></tr>
+<tr><td>8</td><td><code class="method">ShowWindow</code></td><td>显示/隐藏窗口</td></tr>
+<tr><td>9</td><td><code class="method">SetTopMost</code></td><td>置顶/取消置顶</td></tr>
+<tr><td>10</td><td><code class="method">SendMessage</code></td><td>发送窗口消息</td></tr>
+<tr><td>11</td><td><code class="method">CloseWindow</code></td><td>关闭窗口</td></tr>
+</tbody></table>
+</div></section>
+
+<!-- ===================== IProcessOperation ===================== -->
+<section id="s-process">
+<div class="section-header"><h2>⚙️ IProcessOperation <span class="badge orange">131 方法</span></h2></div>
+<div class="section-body">
+<div class="cat-header">▸ 进程管理 (28)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">EnumProcesses</code></td><td>2</td><td><code class="method">OpenProcess</code></td></tr>
+<tr><td>3</td><td><code class="method">TerminateProcess</code></td><td>4</td><td><code class="method">CreateProcess</code></td></tr>
+<tr><td>5</td><td><code class="method">GetProcessName</code></td><td>6</td><td><code class="method">GetProcessPath</code></td></tr>
+<tr><td>7</td><td><code class="method">OpenProcessByPid</code></td><td>8</td><td><code class="method">IsPidValid</code></td></tr>
+<tr><td>9</td><td><code class="method">CloseProcess</code></td><td>10</td><td><code class="method">CloseProcessHandle</code></td></tr>
+<tr><td>11</td><td><code class="method">GetCurrentProcessId</code></td><td>12</td><td><code class="method">GetCurrentProcessId2</code></td></tr>
+<tr><td>13</td><td><code class="method">GetCurrentProcessPseudoHandle</code></td><td>14</td><td><code class="method">GetParentProcessId</code></td></tr>
+<tr><td>15</td><td><code class="method">GetParentProcessIdByHandle</code></td><td>16</td><td><code class="method">GetParentProcessName</code></td></tr>
+<tr><td>17</td><td><code class="method">GetParentProcessNameByHandle</code></td><td>18</td><td><code class="method">GetChildProcessId</code></td></tr>
+<tr><td>19</td><td><code class="method">GetChildProcessIdByHandle</code></td><td>20</td><td><code class="method">GetChildProcesses</code></td></tr>
+<tr><td>21</td><td><code class="method">GetChildProcessesByHandle</code></td><td>22</td><td><code class="method">SuspendProcess</code></td></tr>
+<tr><td>23</td><td><code class="method">SuspendProcessByHandle</code></td><td>24</td><td><code class="method">ResumeProcess</code></td></tr>
+<tr><td>25</td><td><code class="method">ResumeProcessByHandle</code></td><td>26</td><td><code class="method">TerminateProcessById</code></td></tr>
+<tr><td>27</td><td><code class="method">TerminateProcessByHandle</code></td><td>28</td><td><code class="method">GetProcessNameByHandle</code></td></tr>
+</tbody></table>
+<div class="cat-header">▸ 进程信息/查询 (20)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">GetCommandLine</code></td><td>2</td><td><code class="method">GetCommandLineByHandle</code></td></tr>
+<tr><td>3</td><td><code class="method">GetPidByHandle</code></td><td>4</td><td><code class="method">GetPidByName</code></td></tr>
+<tr><td>5</td><td><code class="method">GetPidsByName</code></td><td>6</td><td><code class="method">IsX64Process</code></td></tr>
+<tr><td>7</td><td><code class="method">IsX64ProcessByHandle</code></td><td>8</td><td><code class="method">IsAdmin</code></td></tr>
+<tr><td>9</td><td><code class="method">IsDebugged</code></td><td>10</td><td><code class="method">IsDebuggedEx</code></td></tr>
+<tr><td>11</td><td><code class="method">GetProcessUserName</code></td><td>12</td><td><code class="method">GetProcessUserNameByHandle</code></td></tr>
+<tr><td>13</td><td><code class="method">GetProcessWindowHandle</code></td><td>14</td><td><code class="method">GetProcessWindowHandleByEnum</code></td></tr>
+<tr><td>15</td><td><code class="method">GetProcessPathByHandle</code></td><td>16</td><td><code class="method">GetProcessMemoryUsage</code></td></tr>
+<tr><td>17</td><td><code class="method">GetProcessMemoryUsageByHandle</code></td><td>18</td><td><code class="method">GetPriorityClass</code></td></tr>
+<tr><td>19</td><td><code class="method">GetPriorityClassByHandle</code></td><td>20</td><td><code class="method">SetPriorityClass</code></td></tr>
+<tr><td></td><td><code class="method">SetPriorityClassByHandle</code></td><td></td><td></td></tr>
+</tbody></table>
+<div class="cat-header">▸ 模块/导出/注入 (22)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">EnumProcessModules</code></td><td>2</td><td><code class="method">GetProcessModules</code></td></tr>
+<tr><td>3</td><td><code class="method">GetProcessModulesByHandle</code></td><td>4</td><td><code class="method">GetModuleBaseAddress</code></td></tr>
+<tr><td>5</td><td><code class="method">GetModuleBaseAddressByHandle</code></td><td>6</td><td><code class="method">GetModuleInfo</code></td></tr>
+<tr><td>7</td><td><code class="method">GetModuleInfoByHandle</code></td><td>8</td><td><code class="method">GetModulePeb</code></td></tr>
+<tr><td>9</td><td><code class="method">GetModulePebByHandle</code></td><td>10</td><td><code class="method">GetModuleEntryPoint</code></td></tr>
+<tr><td>11</td><td><code class="method">GetModuleEntryPointByHandle</code></td><td>12</td><td><code class="method">GetExportFunctions</code></td></tr>
+<tr><td>13</td><td><code class="method">GetExportFunctionsByHandle</code></td><td>14</td><td><code class="method">GetExportFunctionsEx</code></td></tr>
+<tr><td>15</td><td><code class="method">GetExportFunctionsExByHandle</code></td><td>16</td><td><code class="method">GetFunctionAddress</code></td></tr>
+<tr><td>17</td><td><code class="method">GetFunctionAddressByHandle</code></td><td>18</td><td><code class="method">GetFunctionAddressFast</code></td></tr>
+<tr><td>19</td><td><code class="method">GetFunctionAddressFastByHandle</code></td><td>20</td><td><code class="method">InjectDLL</code></td></tr>
+<tr><td>21</td><td><code class="method">PreventDllInjection</code></td><td>22</td><td><code class="method">PreventDllInjectionByHandle</code></td></tr>
+</tbody></table>
+<div class="cat-header">▸ 远程代码执行 (18)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">CreateRemoteThread</code></td><td>2</td><td><code class="method">CreateRemoteThreadByHandle</code></td></tr>
+<tr><td>3</td><td><code class="method">CreateHijackThread</code></td><td>4</td><td><code class="method">CreateHijackThreadByHandle</code></td></tr>
+<tr><td>5</td><td><code class="method">ExecuteAssemblyCode</code></td><td>6</td><td><code class="method">ExecuteAssemblyCodeByHandle</code></td></tr>
+<tr><td>7</td><td><code class="method">ExecuteAssemblyCodeEx</code></td><td>8</td><td><code class="method">ExecuteAssemblyCodeExByHandle</code></td></tr>
+<tr><td>9</td><td><code class="method">ExecuteAssemblyCodeByTimer</code></td><td>10</td><td><code class="method">ExecuteAssemblyCodeByTimerByHandle</code></td></tr>
+<tr><td>11</td><td><code class="method">ExecuteAssemblyCodeByThread</code></td><td>12</td><td><code class="method">ExecuteAssemblyCodeByThreadByHandle</code></td></tr>
+<tr><td>13</td><td><code class="method">ExecuteAssemblyCodeByThread32</code></td><td>14</td><td><code class="method">InvokeProcessFunction</code></td></tr>
+<tr><td>15</td><td><code class="method">InvokeProcessFunctionByHandle</code></td><td>16</td><td><code class="method">StartProtectProcess</code></td></tr>
+<tr><td>17</td><td><code class="method">StopProtectProcess</code></td><td>18</td><td><code class="method">CreateProcessAsSystem</code></td></tr>
+</tbody></table>
+<div class="cat-header">▸ 线程/句柄/杂项 (43)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">GetMainThreadId</code></td><td>2</td><td><code class="method">GetMainThreadIdByHandle</code></td></tr>
+<tr><td>3</td><td><code class="method">GetIoCounters</code></td><td>4</td><td><code class="method">DuplicateObjectHandle</code></td></tr>
+<tr><td>5</td><td><code class="method">EnumProcessHandles</code></td><td>6</td><td><code class="method">EnumProcessHandlesByHandle</code></td></tr>
+<tr><td>7</td><td><code class="method">GetTokenInformation</code></td><td>8</td><td><code class="method">OpenProcessToken</code></td></tr>
+<tr><td>9</td><td><code class="method">GetPebBase</code></td><td>10</td><td><code class="method">GetPebBaseByHandle</code></td></tr>
+<tr><td>11</td><td><code class="method">AdjustPrivilege</code></td><td>12</td><td><code class="method">SetProcessDEP</code></td></tr>
+<tr><td>13</td><td><code class="method">GetDEPPolicy</code></td><td>14</td><td><code class="method">SetProcessVolume</code></td></tr>
+<tr><td>15</td><td><code class="method">CreateProcessWithParent</code></td><td>16</td><td><code class="method">CreateProcessWithParentByHandle</code></td></tr>
+<tr><td>17</td><td><code class="method">GetPortByPid</code></td><td>18</td><td><code class="method">GetPidByPort</code></td></tr>
+<tr><td>19</td><td><code class="method">IsPortOccupied</code></td><td>20</td><td><code class="method">OpenPortByPid</code></td></tr>
+<tr><td>21</td><td><code class="method">CloseListHandle</code></td><td>22</td><td><code class="method">CloseListHandle2</code></td></tr>
+<tr><td>23</td><td><code class="method">BeginMonitorProcess</code></td><td>24</td><td><code class="method">StopMonitorProcess</code></td></tr>
+</tbody></table>
+</div></section>
+
+<!-- ===================== IFileOperation ===================== -->
+<section id="s-file">
+<div class="section-header"><h2>📄 IFileOperation <span class="badge green">12 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">CreateFile</code></td><td>创建文件</td></tr>
+<tr><td>2</td><td><code class="method">DeleteFile</code></td><td>删除文件</td></tr>
+<tr><td>3</td><td><code class="method">CopyFile</code></td><td>复制文件</td></tr>
+<tr><td>4</td><td><code class="method">MoveFile</code></td><td>移动文件</td></tr>
+<tr><td>5</td><td><code class="method">ReadTextFile</code></td><td>读取文本文件</td></tr>
+<tr><td>6</td><td><code class="method">WriteTextFile</code></td><td>写入文本文件</td></tr>
+<tr><td>7</td><td><code class="method">ReadBinaryFile</code></td><td>读取二进制文件</td></tr>
+<tr><td>8</td><td><code class="method">WriteBinaryFile</code></td><td>写入二进制文件</td></tr>
+<tr><td>9</td><td><code class="method">FileExists</code></td><td>检查文件是否存在</td></tr>
+<tr><td>10</td><td><code class="method">GetFileSize</code></td><td>获取文件大小</td></tr>
+<tr><td>11</td><td><code class="method">CreateDirectory</code></td><td>创建目录</td></tr>
+<tr><td>12</td><td><code class="method">EnumFiles</code></td><td>枚举文件</td></tr>
+</tbody></table>
+</div></section>
+
+<!-- ===================== IDiskOperation ===================== -->
+<section id="s-disk">
+<div class="section-header"><h2>💾 IDiskOperation <span class="badge green">7 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">EnumDrives</code></td><td>枚举所有驱动器</td></tr>
+<tr><td>2</td><td><code class="method">GetTotalSize</code></td><td>获取磁盘总大小</td></tr>
+<tr><td>3</td><td><code class="method">GetFreeSize</code></td><td>获取磁盘可用空间</td></tr>
+<tr><td>4</td><td><code class="method">GetFileSystemName</code></td><td>获取文件系统名称</td></tr>
+<tr><td>5</td><td><code class="method">GetVolumeLabel</code></td><td>获取卷标</td></tr>
+<tr><td>6</td><td><code class="method">GetVolumeSerial</code></td><td>获取卷序列号</td></tr>
+<tr><td>7</td><td><code class="method">GetDriveType</code></td><td>获取驱动器类型</td></tr>
+</tbody></table>
+</div></section>
+
+<!-- ===================== IThreadOperation ===================== -->
+<section id="s-thread">
+<div class="section-header"><h2>🧵 IThreadOperation <span class="badge green">7 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">CreateThread</code></td><td>创建线程</td></tr>
+<tr><td>2</td><td><code class="method">SuspendThread</code></td><td>暂停线程</td></tr>
+<tr><td>3</td><td><code class="method">ResumeThread</code></td><td>恢复线程</td></tr>
+<tr><td>4</td><td><code class="method">WaitForThread</code></td><td>等待线程结束</td></tr>
+<tr><td>5</td><td><code class="method">TerminateThread</code></td><td>终止线程</td></tr>
+<tr><td>6</td><td><code class="method">GetExitCode</code></td><td>获取线程退出码</td></tr>
+<tr><td>7</td><td><code class="method">GetCurrentThreadId</code></td><td>获取当前线程 ID</td></tr>
+</tbody></table>
+</div></section>
+
+<!-- ===================== IMultiThreadOperation ===================== -->
+<section id="s-multi">
+<div class="section-header"><h2>🔗 IMultiThreadOperation <span class="badge green">13 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">CreateCriticalSection</code></td><td>创建临界区</td></tr>
+<tr><td>2</td><td><code class="method">EnterCriticalSection</code></td><td>进入临界区</td></tr>
+<tr><td>3</td><td><code class="method">LeaveCriticalSection</code></td><td>离开临界区</td></tr>
+<tr><td>4</td><td><code class="method">DeleteCriticalSection</code></td><td>删除临界区</td></tr>
+<tr><td>5</td><td><code class="method">CreateEvent</code></td><td>创建事件</td></tr>
+<tr><td>6</td><td><code class="method">SetEvent</code></td><td>设置事件为有信号</td></tr>
+<tr><td>7</td><td><code class="method">ResetEvent</code></td><td>重置事件为无信号</td></tr>
+<tr><td>8</td><td><code class="method">WaitForSingleObject</code></td><td>等待单个对象</td></tr>
+<tr><td>9</td><td><code class="method">WaitForMultipleObjects</code></td><td>等待多个对象</td></tr>
+<tr><td>10</td><td><code class="method">CreateMutex</code></td><td>创建互斥体</td></tr>
+<tr><td>11</td><td><code class="method">ReleaseMutex</code></td><td>释放互斥体</td></tr>
+<tr><td>12</td><td><code class="method">CreateSemaphore</code></td><td>创建信号量</td></tr>
+<tr><td>13</td><td><code class="method">ReleaseSemaphore</code></td><td>释放信号量</td></tr>
+</tbody></table>
+</div></section>
+
+<!-- ===================== ITextEncoding ===================== -->
+<section id="s-encoding">
+<div class="section-header"><h2>🔤 ITextEncoding <span class="badge green">24 方法</span></h2></div>
+<div class="section-body">
+<div class="cat-header">▸ 基础编码转换 (6)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">AnsiToUtf8</code></td><td>ANSI → UTF-8</td></tr>
+<tr><td>2</td><td><code class="method">Utf8ToAnsi</code></td><td>UTF-8 → ANSI</td></tr>
+<tr><td>3</td><td><code class="method">Utf8ToUtf16</code></td><td>UTF-8 → UTF-16</td></tr>
+<tr><td>4</td><td><code class="method">Utf16ToUtf8</code></td><td>UTF-16 → UTF-8</td></tr>
+<tr><td>5</td><td><code class="method">AnsiToUtf16</code></td><td>ANSI → UTF-16</td></tr>
+<tr><td>6</td><td><code class="method">Utf16ToAnsi</code></td><td>UTF-16 → ANSI</td></tr>
+</tbody></table>
+<div class="cat-header">▸ URL/扩展编码 (18)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">UrlEncode</code></td><td>2</td><td><code class="method">UrlDecode</code></td></tr>
+<tr><td>3</td><td><code class="method">Utf8ToUnicode</code></td><td>4</td><td><code class="method">UnicodeToUtf8</code></td></tr>
+<tr><td>5</td><td><code class="method">Gb2312ToUtf8</code></td><td>6</td><td><code class="method">Utf8ToGb2312</code></td></tr>
+<tr><td>7</td><td><code class="method">UnicodeToAnsi</code></td><td>8</td><td><code class="method">AnsiToUnicode</code></td></tr>
+<tr><td>9</td><td><code class="method">UnicodeToAnsiText</code></td><td>10</td><td><code class="method">AnsiToUnicodeText</code></td></tr>
+<tr><td>11</td><td><code class="method">Base64Encode</code></td><td>12</td><td><code class="method">Base64EncodeA</code></td></tr>
+<tr><td>13</td><td><code class="method">Base64Decode</code></td><td>14</td><td><code class="method">Base64DecodeA</code></td></tr>
+<tr><td>15</td><td><code class="method">Base64DecodeImage</code></td><td>16</td><td><code class="method">TextToUcs2Cn</code></td></tr>
+<tr><td>17</td><td><code class="method">TextToUcs2</code></td><td>18</td><td><code class="method">Ucs2ToText</code></td></tr>
+</tbody></table>
+</div></section>
+
+<!-- ===================== ICryptoOperation ===================== -->
+<section id="s-crypto">
+<div class="section-header"><h2>🔐 ICryptoOperation <span class="badge orange">44 方法</span></h2></div>
+<div class="section-body">
+<div class="cat-header">▸ 哈希/Hash (11)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">MD5Hash</code></td><td>2</td><td><code class="method">MD5HashString</code></td></tr>
+<tr><td>3</td><td><code class="method">MD2Hash</code></td><td>4</td><td><code class="method">MD4Hash</code></td></tr>
+<tr><td>5</td><td><code class="method">SHA1Hash</code></td><td>6</td><td><code class="method">SHA224Hash</code></td></tr>
+<tr><td>7</td><td><code class="method">SHA256Hash</code></td><td>8</td><td><code class="method">SHA384Hash</code></td></tr>
+<tr><td>9</td><td><code class="method">SHA512Hash</code></td><td>10</td><td><code class="method">SHA3Hash</code></td></tr>
+<tr><td>11</td><td><code class="method">CRC32Hash</code></td><td></td><td></td></tr>
+</tbody></table>
+<div class="cat-header">▸ HMAC (6)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">HMAC_MD5</code></td><td>2</td><td><code class="method">HMAC_SHA1</code></td></tr>
+<tr><td>3</td><td><code class="method">HMAC_SHA224</code></td><td>4</td><td><code class="method">HMAC_SHA256</code></td></tr>
+<tr><td>5</td><td><code class="method">HMAC_SHA384</code></td><td>6</td><td><code class="method">HMAC_SHA512</code></td></tr>
+</tbody></table>
+<div class="cat-header">▸ 对称加密 (12)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">AESEncrypt</code></td><td>2</td><td><code class="method">AESDecrypt</code></td></tr>
+<tr><td>3</td><td><code class="method">DESEncrypt</code></td><td>4</td><td><code class="method">DESDecrypt</code></td></tr>
+<tr><td>5</td><td><code class="method">ThreeDESEncrypt</code></td><td>6</td><td><code class="method">ThreeDESDecrypt</code></td></tr>
+<tr><td>7</td><td><code class="method">TEAEncrypt</code></td><td>8</td><td><code class="method">TEADecrypt</code></td></tr>
+<tr><td>9</td><td><code class="method">XTEAEncrypt</code></td><td>10</td><td><code class="method">XTEADecrypt</code></td></tr>
+<tr><td>11</td><td><code class="method">RC4Encrypt</code></td><td>12</td><td><code class="method">XOREncrypt</code></td></tr>
+</tbody></table>
+<div class="cat-header">▸ 非对称加密 RSA (5)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">RSAKeyGenerate</code></td><td>RSA 密钥生成</td></tr>
+<tr><td>2</td><td><code class="method">RSAPublicEncrypt</code></td><td>RSA 公钥加密</td></tr>
+<tr><td>3</td><td><code class="method">RSAPrivateDecrypt</code></td><td>RSA 私钥解密</td></tr>
+<tr><td>4</td><td><code class="method">RSASign</code></td><td>RSA 签名</td></tr>
+<tr><td>5</td><td><code class="method">RSAVerify</code></td><td>RSA 验签</td></tr>
+</tbody></table>
+<div class="cat-header">▸ ECC 椭圆曲线 (3)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">ECDSASign</code></td><td>ECDSA 签名</td></tr>
+<tr><td>2</td><td><code class="method">ECDSAVerify</code></td><td>ECDSA 验证</td></tr>
+<tr><td>3</td><td><code class="method">ECDHKeyExchange</code></td><td>ECDH 密钥交换</td></tr>
+</tbody></table>
+<div class="cat-header">▸ DSA/DH (3)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">DSASign</code></td><td>DSA 签名</td></tr>
+<tr><td>2</td><td><code class="method">DSAVerify</code></td><td>DSA 验证</td></tr>
+<tr><td>3</td><td><code class="method">DHKeyExchange</code></td><td>DH 密钥交换</td></tr>
+</tbody></table>
+<div class="cat-header">▸ 编码 (4)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">Base32Encode</code></td><td>Base32 编码</td></tr>
+<tr><td>2</td><td><code class="method">Base32Decode</code></td><td>Base32 解码</td></tr>
+<tr><td>3</td><td><code class="method">Base58Encode</code></td><td>Base58 编码</td></tr>
+<tr><td>4</td><td><code class="method">Base58Decode</code></td><td>Base58 解码</td></tr>
+</tbody></table>
+</div></section>
+
+<!-- ===================== IComInvoke ===================== -->
+<section id="s-com">
+<div class="section-header"><h2>🔌 IComInvoke <span class="badge green">8 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">CreateObject</code></td><td>创建 COM 对象</td></tr>
+<tr><td>2</td><td><code class="method">CreateObjectFromFile</code></td><td>从文件创建 COM 对象</td></tr>
+<tr><td>3</td><td><code class="method">GetProperty</code></td><td>获取对象属性</td></tr>
+<tr><td>4</td><td><code class="method">PutProperty</code></td><td>设置对象属性</td></tr>
+<tr><td>5</td><td><code class="method">Invoke</code></td><td>调用对象方法</td></tr>
+<tr><td>6</td><td><code class="method">InvokeNoResult</code></td><td>调用对象方法(无返回值)</td></tr>
+<tr><td>7</td><td><code class="method">ReleaseObject</code></td><td>释放 COM 对象</td></tr>
+<tr><td>8</td><td><code class="method">GetInterfaceInfo</code></td><td>获取接口信息</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== IBaseConversion ===================== -->
+<section id="s-base">
+<div class="section-header"><h2>🔢 IBaseConversion <span class="badge green">6 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">DecToBin</code></td><td>十进制 → 二进制</td></tr>
+<tr><td>2</td><td><code class="method">DecToOct</code></td><td>十进制 → 八进制</td></tr>
+<tr><td>3</td><td><code class="method">DecToHex</code></td><td>十进制 → 十六进制</td></tr>
+<tr><td>4</td><td><code class="method">StrToDec</code></td><td>字符串 → 十进制</td></tr>
+<tr><td>5</td><td><code class="method">DecToBase</code></td><td>十进制 → 任意进制</td></tr>
+<tr><td>6</td><td><code class="method">BigStrToDec</code></td><td>大数字符串 → 十进制</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== ITimeOperation ===================== -->
+<section id="s-time">
+<div class="section-header"><h2>⏰ ITimeOperation <span class="badge green">10 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">GetSystemTime</code></td><td>获取系统时间</td></tr>
+<tr><td>2</td><td><code class="method">GetLocalTime</code></td><td>获取本地时间</td></tr>
+<tr><td>3</td><td><code class="method">FormatTime</code></td><td>格式化时间</td></tr>
+<tr><td>4</td><td><code class="method">GetTimestamp</code></td><td>获取时间戳</td></tr>
+<tr><td>5</td><td><code class="method">GetHighResTimestamp</code></td><td>获取高精度时间戳</td></tr>
+<tr><td>6</td><td><code class="method">TimestampToSystemTime</code></td><td>时间戳 → 系统时间</td></tr>
+<tr><td>7</td><td><code class="method">SystemTimeToTimestamp</code></td><td>系统时间 → 时间戳</td></tr>
+<tr><td>8</td><td><code class="method">SleepMs</code></td><td>睡眠指定毫秒</td></tr>
+<tr><td>9</td><td><code class="method">StartTimer</code></td><td>启动定时器</td></tr>
+<tr><td>10</td><td><code class="method">StopTimer</code></td><td>停止定时器</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== IMemoryOperation ===================== -->
+<section id="s-memory">
+<div class="section-header"><h2>🧠 IMemoryOperation <span class="badge orange">90+ 方法</span></h2></div>
+<div class="section-body">
+<div class="cat-header">▸ 基本内存读写 (PID 模式, 21)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">ReadByte</code></td><td>2</td><td><code class="method">ReadShort</code></td></tr>
+<tr><td>3</td><td><code class="method">ReadInt</code></td><td>4</td><td><code class="method">ReadLong</code></td></tr>
+<tr><td>5</td><td><code class="method">ReadIntPtr</code></td><td>6</td><td><code class="method">ReadFloat</code></td></tr>
+<tr><td>7</td><td><code class="method">ReadDouble</code></td><td>8</td><td><code class="method">ReadTextW</code></td></tr>
+<tr><td>9</td><td><code class="method">ReadTextA</code></td><td>10</td><td><code class="method">ReadBytes</code></td></tr>
+<tr><td>11</td><td><code class="method">WriteByte</code></td><td>12</td><td><code class="method">WriteShort</code></td></tr>
+<tr><td>13</td><td><code class="method">WriteInt</code></td><td>14</td><td><code class="method">WriteLong</code></td></tr>
+<tr><td>15</td><td><code class="method">WriteIntPtr</code></td><td>16</td><td><code class="method">WriteFloat</code></td></tr>
+<tr><td>17</td><td><code class="method">WriteDouble</code></td><td>18</td><td><code class="method">WriteTextW</code></td></tr>
+<tr><td>19</td><td><code class="method">WriteTextA</code></td><td>20</td><td><code class="method">WriteBytes</code></td></tr>
+<tr><td>21</td><td><code class="method">WritePtr</code></td><td></td><td></td></tr>
+</tbody></table>
+<div class="cat-header">▸ 基本内存读写 (句柄模式, 21)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">ReadByteEx</code></td><td>2</td><td><code class="method">ReadShortEx</code></td></tr>
+<tr><td>3</td><td><code class="method">ReadIntEx</code></td><td>4</td><td><code class="method">ReadLongEx</code></td></tr>
+<tr><td>5</td><td><code class="method">ReadIntPtrEx</code></td><td>6</td><td><code class="method">ReadFloatEx</code></td></tr>
+<tr><td>7</td><td><code class="method">ReadDoubleEx</code></td><td>8</td><td><code class="method">ReadTextWEx</code></td></tr>
+<tr><td>9</td><td><code class="method">ReadTextAEx</code></td><td>10</td><td><code class="method">ReadBytesEx</code></td></tr>
+<tr><td>11</td><td><code class="method">WriteByteEx</code></td><td>12</td><td><code class="method">WriteShortEx</code></td></tr>
+<tr><td>13</td><td><code class="method">WriteIntEx</code></td><td>14</td><td><code class="method">WriteLongEx</code></td></tr>
+<tr><td>15</td><td><code class="method">WriteIntPtrEx</code></td><td>16</td><td><code class="method">WriteFloatEx</code></td></tr>
+<tr><td>17</td><td><code class="method">WriteDoubleEx</code></td><td>18</td><td><code class="method">WriteTextWEx</code></td></tr>
+<tr><td>19</td><td><code class="method">WriteTextAEx</code></td><td>20</td><td><code class="method">WriteBytesEx</code></td></tr>
+<tr><td>21</td><td><code class="method">WritePtrEx</code></td><td></td><td></td></tr>
+</tbody></table>
+<div class="cat-header">▸ 无符号读写 (PID + 句柄, 16)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">ReadUByte</code></td><td>2</td><td><code class="method">ReadUShort</code></td></tr>
+<tr><td>3</td><td><code class="method">ReadUInt</code></td><td>4</td><td><code class="method">ReadULong</code></td></tr>
+<tr><td>5</td><td><code class="method">WriteUByte</code></td><td>6</td><td><code class="method">WriteUShort</code></td></tr>
+<tr><td>7</td><td><code class="method">WriteUInt</code></td><td>8</td><td><code class="method">WriteULong</code></td></tr>
+<tr><td>9</td><td><code class="method">ReadUByteEx</code></td><td>10</td><td><code class="method">ReadUShortEx</code></td></tr>
+<tr><td>11</td><td><code class="method">ReadUIntEx</code></td><td>12</td><td><code class="method">ReadULongEx</code></td></tr>
+<tr><td>13</td><td><code class="method">WriteUByteEx</code></td><td>14</td><td><code class="method">WriteUShortEx</code></td></tr>
+<tr><td>15</td><td><code class="method">WriteUIntEx</code></td><td>16</td><td><code class="method">WriteULongEx</code></td></tr>
+</tbody></table>
+<div class="cat-header">▸ 内存分配/查询/表达式/特征码 (45)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>#</th><th>方法名</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">AllocProcessMemory</code></td><td>2</td><td><code class="method">AllocProcessMemory2</code></td></tr>
+<tr><td>3</td><td><code class="method">VirtualFree</code></td><td>4</td><td><code class="method">HeapAlloc</code></td></tr>
+<tr><td>5</td><td><code class="method">HeapAllocGlobal</code></td><td>6</td><td><code class="method">HeapAllocLocal</code></td></tr>
+<tr><td>7</td><td><code class="method">HeapReAlloc</code></td><td>8</td><td><code class="method">HeapFree</code></td></tr>
+<tr><td>9</td><td><code class="method">HeapAllocBytes</code></td><td>10</td><td><code class="method">HeapAllocInt</code></td></tr>
+<tr><td>11</td><td><code class="method">HeapAllocIntPtr</code></td><td>12</td><td><code class="method">HeapAllocTextW</code></td></tr>
+<tr><td>13</td><td><code class="method">HeapAllocTextA</code></td><td>14</td><td><code class="method">QueryMemory</code></td></tr>
+<tr><td>15</td><td><code class="method">QueryMemoryEx</code></td><td>16</td><td><code class="method">QueryMemorySelf</code></td></tr>
+<tr><td>17</td><td><code class="method">ProtectMemory</code></td><td>18</td><td><code class="method">ProtectMemoryEx</code></td></tr>
+<tr><td>19</td><td><code class="method">ProtectMemorySelf</code></td><td>20</td><td><code class="method">ReadModuleBase</code></td></tr>
+<tr><td>21</td><td><code class="method">ReadModuleBaseEx</code></td><td>22</td><td><code class="method">ResolveExpressionAddress</code></td></tr>
+<tr><td>23</td><td><code class="method">ReadExpressionInt</code></td><td>24</td><td><code class="method">ReadExpressionIntEx</code></td></tr>
+<tr><td>25</td><td><code class="method">ReadExpressionFloat</code></td><td>26</td><td><code class="method">ReadExpressionFloatEx</code></td></tr>
+<tr><td>27</td><td><code class="method">ReadExpressionDouble</code></td><td>28</td><td><code class="method">ReadExpressionDoubleEx</code></td></tr>
+<tr><td>29</td><td><code class="method">ReadExpressionLong</code></td><td>30</td><td><code class="method">ReadExpressionLongEx</code></td></tr>
+<tr><td>31</td><td><code class="method">ReadExpressionIntPtr</code></td><td>32</td><td><code class="method">ReadExpressionIntPtrEx</code></td></tr>
+<tr><td>33</td><td><code class="method">FindPattern</code></td><td>34</td><td><code class="method">FindPatternEx</code></td></tr>
+<tr><td>35</td><td><code class="method">FindPatternArray</code></td><td>36</td><td><code class="method">FindPatternArrayEx</code></td></tr>
+<tr><td>37</td><td><code class="method">FindPatternInModule</code></td><td>38</td><td><code class="method">FindPatternInModuleEx</code></td></tr>
+<tr><td>39</td><td><code class="method">SearchBytes</code></td><td>40</td><td><code class="method">SearchBytesEx</code></td></tr>
+<tr><td>41</td><td><code class="method">ReadProcessMemory</code></td><td>42</td><td><code class="method">WriteProcessMemory</code></td></tr>
+<tr><td>43</td><td><code class="method">VirtualAllocEx</code></td><td>44</td><td><code class="method">VirtualFreeEx</code></td></tr>
+<tr><td>45</td><td><code class="method">VirtualQueryEx</code></td><td></td><td></td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== IAssemblyOperation ===================== -->
+<section id="s-asm">
+<div class="section-header"><h2>⚡ IAssemblyOperation <span class="badge green">17 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">AssembleX86</code></td><td>汇编 X86 代码</td></tr>
+<tr><td>2</td><td><code class="method">AssembleX64</code></td><td>汇编 X64 代码</td></tr>
+<tr><td>3</td><td><code class="method">ExecuteAsmX86</code></td><td>执行 X86 汇编代码</td></tr>
+<tr><td>4</td><td><code class="method">Push</code></td><td>PUSH 指令</td></tr>
+<tr><td>5</td><td><code class="method">Call</code></td><td>CALL 指令</td></tr>
+<tr><td>6</td><td><code class="method">CallDwordPtr</code></td><td>CALL DWORD PTR 指令</td></tr>
+<tr><td>7</td><td><code class="method">CallQwordPtr</code></td><td>CALL QWORD PTR 指令</td></tr>
+<tr><td>8</td><td><code class="method">Jmp</code></td><td>JMP 指令</td></tr>
+<tr><td>9</td><td><code class="method">JmpLong</code></td><td>长 JMP 指令</td></tr>
+<tr><td>10</td><td><code class="method">Pushad_X64</code></td><td>X64 PUSHAD</td></tr>
+<tr><td>11</td><td><code class="method">Popad_X64</code></td><td>X64 POPAD</td></tr>
+<tr><td>12</td><td><code class="method">AsmEmpty</code></td><td>清空汇编缓冲区</td></tr>
+<tr><td>13</td><td><code class="method">AsmAdd</code></td><td>添加汇编指令</td></tr>
+<tr><td>14</td><td><code class="method">AsmTakeShellcode</code></td><td>取汇编 ShellCode</td></tr>
+<tr><td>15</td><td><code class="method">AsmGetText</code></td><td>获取汇编文本</td></tr>
+<tr><td>16</td><td><code class="method">AsmPushadX64</code></td><td>X64 PUSHAD (别名)</td></tr>
+<tr><td>17</td><td><code class="method">AsmPopadX64</code></td><td>X64 POPAD (别名)</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== IDisassemblyOperation ===================== -->
+<section id="s-disasm">
+<div class="section-header"><h2>🔍 IDisassemblyOperation <span class="badge green">4 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">DisassembleX86</code></td><td>反汇编 X86 代码</td></tr>
+<tr><td>2</td><td><code class="method">DisassembleX64</code></td><td>反汇编 X64 代码</td></tr>
+<tr><td>3</td><td><code class="method">DisassembleBatch</code></td><td>批量反汇编</td></tr>
+<tr><td>4</td><td><code class="method">GetInstructionLength</code></td><td>获取指令长度</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== IHttpOperation ===================== -->
+<section id="s-http">
+<div class="section-header"><h2>🌐 IHttpOperation <span class="badge green">6 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">HttpRequest</code></td><td>HTTP 请求 (23 参数, 支持 SSL/Proxy/Cookie)</td></tr>
+<tr><td>2</td><td><code class="method">HttpRequestCom</code></td><td>HTTP 请求 (COM 兼容签名)</td></tr>
+<tr><td>3</td><td><code class="method">LoadCert</code></td><td>加载 P12 证书</td></tr>
+<tr><td>4</td><td><code class="method">FreeCert</code></td><td>释放证书句柄</td></tr>
+<tr><td>5</td><td><code class="method">MergeCookies</code></td><td>合并 Cookies</td></tr>
+<tr><td>6</td><td><code class="method">GetCookie</code></td><td>从 Cookie 字符串获取指定键值</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== IDLLOperation ===================== -->
+<section id="s-dll">
+<div class="section-header"><h2>📦 IDLLOperation <span class="badge green">19 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">InjectThreadDLL</code></td><td>线程注入 DLL</td></tr>
+<tr><td>2</td><td><code class="method">UnloadThreadDLL</code></td><td>卸载线程注入的 DLL</td></tr>
+<tr><td>3</td><td><code class="method">InjectHookDLL</code></td><td>Hook 注入 DLL</td></tr>
+<tr><td>4</td><td><code class="method">UnloadHookDLL</code></td><td>卸载 Hook 注入的 DLL</td></tr>
+<tr><td>5</td><td><code class="method">InitThreadInject</code></td><td>初始化线程注入</td></tr>
+<tr><td>6</td><td><code class="method">InitHookInject</code></td><td>初始化 Hook 注入</td></tr>
+<tr><td>7</td><td><code class="method">SendHookQuit</code></td><td>发送 Hook 退出消息</td></tr>
+<tr><td>8</td><td><code class="method">InjectHollowProcess</code></td><td>进程空洞注入</td></tr>
+<tr><td>9</td><td><code class="method">InjectReflectiveDLL</code></td><td>反射式 DLL 注入</td></tr>
+<tr><td>10</td><td><code class="method">InjectReflectiveProcess</code></td><td>反射式进程注入</td></tr>
+<tr><td>11</td><td><code class="method">LoadPEFromMemory</code></td><td>从内存加载 PE</td></tr>
+<tr><td>12</td><td><code class="method">FreePEModule</code></td><td>释放 PE 模块</td></tr>
+<tr><td>13</td><td><code class="method">GetPEProcAddress</code></td><td>获取 PE 导出函数地址</td></tr>
+<tr><td>14</td><td><code class="method">RemovePEHeader</code></td><td>移除 PE 文件头</td></tr>
+<tr><td>15</td><td><code class="method">UnlinkLdrModule</code></td><td>从 LDR 链表卸载模块</td></tr>
+<tr><td>16</td><td><code class="method">InjectImeDLLByWindow</code></td><td>通过窗口注入 IME DLL</td></tr>
+<tr><td>17</td><td><code class="method">InjectImeDLLByThread</code></td><td>通过线程注入 IME DLL</td></tr>
+<tr><td>18</td><td><code class="method">InjectImePluginByWindow</code></td><td>通过窗口注入 IME 插件</td></tr>
+<tr><td>19</td><td><code class="method">InjectImePluginByThread</code></td><td>通过线程注入 IME 插件</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== IHookOperation ===================== -->
+<section id="s-hook">
+<div class="section-header"><h2>🪝 IHookOperation <span class="badge green">11 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">InstallDetoursHook</code></td><td>安装 Detours Hook</td></tr>
+<tr><td>2</td><td><code class="method">InstallInlineHook</code></td><td>安装 Inline Hook</td></tr>
+<tr><td>3</td><td><code class="method">InstallVehHook</code></td><td>安装 VEH Hook</td></tr>
+<tr><td>4</td><td><code class="method">InstallSuperHook</code></td><td>安装 Super Hook</td></tr>
+<tr><td>5</td><td><code class="method">InstallIATHook</code></td><td>安装 IAT Hook</td></tr>
+<tr><td>6</td><td><code class="method">InstallEATHook</code></td><td>安装 EAT Hook</td></tr>
+<tr><td>7</td><td><code class="method">UninstallHook</code></td><td>卸载 Hook</td></tr>
+<tr><td>8</td><td><code class="method">EnableHook</code></td><td>启用/禁用 Hook</td></tr>
+<tr><td>9</td><td><code class="method">GetHookOriginalAddress</code></td><td>获取 Hook 原始地址</td></tr>
+<tr><td>10</td><td><code class="method">CallOriginal15</code></td><td>调用原始函数 (15字节)</td></tr>
+<tr><td>11</td><td><code class="method">RemoveAllHooks</code></td><td>移除所有 Hook</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== IRegexOperation ===================== -->
+<section id="s-regex">
+<div class="section-header"><h2>📐 IRegexOperation <span class="badge green">10 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">SetBackend</code></td><td>设置正则引擎后端</td></tr>
+<tr><td>2</td><td><code class="method">GetBackend</code></td><td>获取当前引擎后端</td></tr>
+<tr><td>3</td><td><code class="method">SetPattern</code></td><td>设置正则表达式模式</td></tr>
+<tr><td>4</td><td><code class="method">SetFlag</code></td><td>设置正则标志</td></tr>
+<tr><td>5</td><td><code class="method">GetFlag</code></td><td>获取正则标志</td></tr>
+<tr><td>6</td><td><code class="method">Test</code></td><td>测试匹配</td></tr>
+<tr><td>7</td><td><code class="method">Match</code></td><td>匹配第一个结果</td></tr>
+<tr><td>8</td><td><code class="method">Matches</code></td><td>匹配所有结果</td></tr>
+<tr><td>9</td><td><code class="method">Replace</code></td><td>替换匹配</td></tr>
+<tr><td>10</td><td><code class="method">Split</code></td><td>分割字符串</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== IFSOOperation ===================== -->
+<section id="s-fso">
+<div class="section-header"><h2>📂 IFSOOperation <span class="badge green">25 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">DriveExistsFSO</code></td><td>驱动器是否存在</td></tr>
+<tr><td>2</td><td><code class="method">GetDriveInfoFSO</code></td><td>获取驱动器信息</td></tr>
+<tr><td>3</td><td><code class="method">EnumDrivesFSO</code></td><td>枚举所有驱动器</td></tr>
+<tr><td>4</td><td><code class="method">FolderExistsFSO</code></td><td>文件夹是否存在</td></tr>
+<tr><td>5</td><td><code class="method">CreateFolderFSO</code></td><td>创建文件夹</td></tr>
+<tr><td>6</td><td><code class="method">DeleteFolderFSO</code></td><td>删除文件夹</td></tr>
+<tr><td>7</td><td><code class="method">CopyFolderFSO</code></td><td>复制文件夹</td></tr>
+<tr><td>8</td><td><code class="method">MoveFolderFSO</code></td><td>移动文件夹</td></tr>
+<tr><td>9</td><td><code class="method">GetFolderInfoFSO</code></td><td>获取文件夹信息</td></tr>
+<tr><td>10</td><td><code class="method">FileExistsFSO</code></td><td>文件是否存在</td></tr>
+<tr><td>11</td><td><code class="method">DeleteFileFSO</code></td><td>删除文件</td></tr>
+<tr><td>12</td><td><code class="method">CopyFileFSO</code></td><td>复制文件</td></tr>
+<tr><td>13</td><td><code class="method">MoveFileFSO</code></td><td>移动文件</td></tr>
+<tr><td>14</td><td><code class="method">GetFileInfoFSO</code></td><td>获取文件信息</td></tr>
+<tr><td>15</td><td><code class="method">GetSpecialFolderFSO</code></td><td>获取特殊文件夹路径</td></tr>
+<tr><td>16</td><td><code class="method">GetTempNameFSO</code></td><td>获取临时文件名</td></tr>
+<tr><td>17</td><td><code class="method">GetAbsolutePathNameFSO</code></td><td>获取绝对路径</td></tr>
+<tr><td>18</td><td><code class="method">GetBaseNameFSO</code></td><td>获取文件名(不含扩展名)</td></tr>
+<tr><td>19</td><td><code class="method">GetExtensionNameFSO</code></td><td>获取扩展名</td></tr>
+<tr><td>20</td><td><code class="method">GetFileNameFSO</code></td><td>获取文件名</td></tr>
+<tr><td>21</td><td><code class="method">GetParentFolderNameFSO</code></td><td>获取父文件夹名</td></tr>
+<tr><td>22</td><td><code class="method">GetShortPathFSO</code></td><td>获取短路径</td></tr>
+<tr><td>23</td><td><code class="method">CreateTextFileFSO</code></td><td>创建文本文件</td></tr>
+<tr><td>24</td><td><code class="method">OpenTextFileFSO</code></td><td>打开文本文件</td></tr>
+<tr><td>25</td><td><code class="method">AppendToFileFSO</code></td><td>追加到文件</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== ISmCrypto ===================== -->
+<section id="s-sm">
+<div class="section-header"><h2>🇨🇳 ISmCrypto <span class="badge green">8 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">SM3Hash</code></td><td>SM3 哈希计算</td></tr>
+<tr><td>2</td><td><code class="method">SM4Encrypt</code></td><td>SM4 加密</td></tr>
+<tr><td>3</td><td><code class="method">SM4Decrypt</code></td><td>SM4 解密</td></tr>
+<tr><td>4</td><td><code class="method">SM2GenerateKey</code></td><td>生成 SM2 密钥对</td></tr>
+<tr><td>5</td><td><code class="method">SM2Encrypt</code></td><td>SM2 加密</td></tr>
+<tr><td>6</td><td><code class="method">SM2Decrypt</code></td><td>SM2 解密</td></tr>
+<tr><td>7</td><td><code class="method">SM2Sign</code></td><td>SM2 签名</td></tr>
+<tr><td>8</td><td><code class="method">SM2Verify</code></td><td>SM2 验证</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== IFileHandleOperation ===================== -->
+<section id="s-fh">
+<div class="section-header"><h2>🔧 IFileHandleOperation <span class="badge green">11 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">FHOpen</code></td><td>打开文件句柄</td></tr>
+<tr><td>2</td><td><code class="method">FHClose</code></td><td>关闭文件句柄</td></tr>
+<tr><td>3</td><td><code class="method">FHSeek</code></td><td>设置文件指针位置</td></tr>
+<tr><td>4</td><td><code class="method">FHGetPosition</code></td><td>获取文件指针位置</td></tr>
+<tr><td>5</td><td><code class="method">FHToBegin</code></td><td>移动到文件开头</td></tr>
+<tr><td>6</td><td><code class="method">FHToEnd</code></td><td>移动到文件末尾</td></tr>
+<tr><td>7</td><td><code class="method">FHWriteBytes</code></td><td>写入二进制数据</td></tr>
+<tr><td>8</td><td><code class="method">FHWriteText</code></td><td>写入文本数据</td></tr>
+<tr><td>9</td><td><code class="method">FHReadBytes</code></td><td>读取二进制数据</td></tr>
+<tr><td>10</td><td><code class="method">FHReadText</code></td><td>读取文本数据</td></tr>
+<tr><td>11</td><td><code class="method">FHGetSize</code></td><td>获取文件大小</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== IDirectoryOperation ===================== -->
+<section id="s-dir">
+<div class="section-header"><h2>📁 IDirectoryOperation <span class="badge green">22 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">DirCreate</code></td><td>创建目录</td></tr>
+<tr><td>2</td><td><code class="method">DirDelete</code></td><td>删除目录</td></tr>
+<tr><td>3</td><td><code class="method">DirExists</code></td><td>目录是否存在</td></tr>
+<tr><td>4</td><td><code class="method">DirGetSubDirectoryCount</code></td><td>获取子目录数量</td></tr>
+<tr><td>5</td><td><code class="method">DirCopy</code></td><td>复制目录</td></tr>
+<tr><td>6</td><td><code class="method">DirMove</code></td><td>移动目录</td></tr>
+<tr><td>7</td><td><code class="method">DirGetCreateTime</code></td><td>获取创建时间</td></tr>
+<tr><td>8</td><td><code class="method">DirGetModifyTime</code></td><td>获取修改时间</td></tr>
+<tr><td>9</td><td><code class="method">DirGetAccessTime</code></td><td>获取访问时间</td></tr>
+<tr><td>10</td><td><code class="method">DirGetShortPath</code></td><td>获取短路径</td></tr>
+<tr><td>11</td><td><code class="method">DirGetFullPath</code></td><td>获取完整路径</td></tr>
+<tr><td>12</td><td><code class="method">DirGetShortName</code></td><td>获取短名称</td></tr>
+<tr><td>13</td><td><code class="method">DirGetDirName</code></td><td>获取目录名</td></tr>
+<tr><td>14</td><td><code class="method">DirMoveByCmd</code></td><td>通过命令行移动目录</td></tr>
+<tr><td>15</td><td><code class="method">IsEmptyDir</code></td><td>是否空目录</td></tr>
+<tr><td>16</td><td><code class="method">HasSubDir</code></td><td>是否有子目录</td></tr>
+<tr><td>17</td><td><code class="method">GetTempPathDir</code></td><td>获取临时目录路径</td></tr>
+<tr><td>18</td><td><code class="method">GetSystem32Dir</code></td><td>获取 System32 目录路径</td></tr>
+<tr><td>19</td><td><code class="method">GetSysWOW64Dir</code></td><td>获取 SysWOW64 目录路径</td></tr>
+<tr><td>20</td><td><code class="method">DirGetParentPath</code></td><td>获取父目录路径</td></tr>
+<tr><td>21</td><td><code class="method">DirGetSpecialFolder</code></td><td>获取特殊文件夹路径</td></tr>
+<tr><td>22</td><td><code class="method">DirEnum</code></td><td>枚举目录内容</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== IFileOperationEx ===================== -->
+<section id="s-fx">
+<div class="section-header"><h2>🔧 IFileOperationEx <span class="badge green">39 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">GetFileNameApi</code></td><td>获取文件名</td></tr>
+<tr><td>2</td><td><code class="method">CopyFileApi</code></td><td>复制文件</td></tr>
+<tr><td>3</td><td><code class="method">GetExtensionApi</code></td><td>获取扩展名</td></tr>
+<tr><td>4</td><td><code class="method">OpenFileApi</code></td><td>打开文件</td></tr>
+<tr><td>5</td><td><code class="method">CloseFileApi</code></td><td>关闭文件</td></tr>
+<tr><td>6</td><td><code class="method">SeekFileApi</code></td><td>定位文件指针</td></tr>
+<tr><td>7</td><td><code class="method">GetFilePositionApi</code></td><td>获取文件指针位置</td></tr>
+<tr><td>8</td><td><code class="method">ToBeginApi</code></td><td>移动到文件开头</td></tr>
+<tr><td>9</td><td><code class="method">ToEndApi</code></td><td>移动到文件末尾</td></tr>
+<tr><td>10</td><td><code class="method">WriteBytesApi</code></td><td>写入二进制数据</td></tr>
+<tr><td>11</td><td><code class="method">WriteTextApi</code></td><td>写入文本数据</td></tr>
+<tr><td>12</td><td><code class="method">ReadBytesApi</code></td><td>读取二进制数据</td></tr>
+<tr><td>13</td><td><code class="method">ReadTextApi</code></td><td>读取文本数据</td></tr>
+<tr><td>14</td><td><code class="method">GetSizeByHandleApi</code></td><td>通过句柄获取文件大小</td></tr>
+<tr><td>15</td><td><code class="method">IsDirectoryApi</code></td><td>判断是否为目录</td></tr>
+<tr><td>16</td><td><code class="method">GetDirectoryApi</code></td><td>获取目录路径</td></tr>
+<tr><td>17</td><td><code class="method">FileExistsApi</code></td><td>文件是否存在</td></tr>
+<tr><td>18</td><td><code class="method">GetAttributesApi</code></td><td>获取文件属性</td></tr>
+<tr><td>19</td><td><code class="method">SetAttributesApi</code></td><td>设置文件属性</td></tr>
+<tr><td>20</td><td><code class="method">RemoveAttributesApi</code></td><td>移除文件属性</td></tr>
+<tr><td>21</td><td><code class="method">GetFileSizeApi</code></td><td>获取文件大小</td></tr>
+<tr><td>22</td><td><code class="method">DeleteFileApi</code></td><td>删除文件</td></tr>
+<tr><td>23</td><td><code class="method">OperateFileApi</code></td><td>文件操作(通用)</td></tr>
+<tr><td>24</td><td><code class="method">DeleteToRecycleBinApi</code></td><td>删除到回收站</td></tr>
+<tr><td>25</td><td><code class="method">ForceDeleteApi</code></td><td>强制删除</td></tr>
+<tr><td>26</td><td><code class="method">MoveFileApi</code></td><td>移动文件</td></tr>
+<tr><td>27</td><td><code class="method">EnumFilesApi</code></td><td>枚举文件</td></tr>
+<tr><td>28</td><td><code class="method">GetFileVersionApi</code></td><td>获取文件版本</td></tr>
+<tr><td>29</td><td><code class="method">ToShortPathApi</code></td><td>转换为短路径</td></tr>
+<tr><td>30</td><td><code class="method">ToLongPathApi</code></td><td>转换为长路径</td></tr>
+<tr><td>31</td><td><code class="method">GetTextEncodingApi</code></td><td>获取文本编码</td></tr>
+<tr><td>32</td><td><code class="method">ExecuteFileApi</code></td><td>执行文件</td></tr>
+<tr><td>33</td><td><code class="method">GetMimeTypeApi</code></td><td>获取 MIME 类型</td></tr>
+<tr><td>34</td><td><code class="method">ExtractIconApi</code></td><td>提取图标</td></tr>
+<tr><td>35</td><td><code class="method">ExtractIconHandleApi</code></td><td>提取图标句柄</td></tr>
+<tr><td>36</td><td><code class="method">GetIconFromHandleApi</code></td><td>从句柄获取图标</td></tr>
+<tr><td>37</td><td><code class="method">FindFirstApi</code></td><td>查找第一个文件</td></tr>
+<tr><td>38</td><td><code class="method">FindNextApi</code></td><td>查找下一个文件</td></tr>
+<tr><td>39</td><td><code class="method">FindCloseApi</code></td><td>关闭查找句柄</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== IFileMapping/IShareMemory ===================== -->
+<section id="s-map">
+<div class="section-header"><h2>🗺️ IFileMapping / IShareMemory <span class="badge green">各 17 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">ConstGet</code></td><td>获取系统常量值</td></tr>
+<tr><td>2</td><td><code class="method">Create</code></td><td>创建内存映射 / 共享内存</td></tr>
+<tr><td>3</td><td><code class="method">GetMax</code></td><td>获取最大容量</td></tr>
+<tr><td>4</td><td><code class="method">Close</code></td><td>关闭映射句柄</td></tr>
+<tr><td>5</td><td><code class="method">Open</code></td><td>打开已有映射</td></tr>
+<tr><td>6</td><td><code class="method">GetPoint</code></td><td>获取映射视图地址</td></tr>
+<tr><td>7</td><td><code class="method">RelasePoint</code></td><td>释放映射视图</td></tr>
+<tr><td>8</td><td><code class="method">WriteBin</code></td><td>写入二进制数据</td></tr>
+<tr><td>9</td><td><code class="method">ReadBin</code></td><td>读取二进制数据</td></tr>
+<tr><td>10</td><td><code class="method">WriteText</code></td><td>写入 Unicode 文本</td></tr>
+<tr><td>11</td><td><code class="method">ReadText</code></td><td>读取 Unicode 文本</td></tr>
+<tr><td>12</td><td><code class="method">WriteTextA</code></td><td>写入 ANSI 文本</td></tr>
+<tr><td>13</td><td><code class="method">ReadTextA</code></td><td>读取 ANSI 文本</td></tr>
+<tr><td>14</td><td><code class="method">WriteInt</code></td><td>写入 32 位整数</td></tr>
+<tr><td>15</td><td><code class="method">ReadInt</code></td><td>读取 32 位整数</td></tr>
+<tr><td>16</td><td><code class="method">WriteIntP</code></td><td>写入指针值</td></tr>
+<tr><td>17</td><td><code class="method">ReadIntP</code></td><td>读取指针值</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== IJScriptEngine ===================== -->
+<section id="s-js">
+<div class="section-header"><h2>⚡ IJScriptEngine <span class="badge purple">13 项</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法/属性</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">AddCode(code)</code></td><td>添加 JS 代码到引擎</td></tr>
+<tr><td>2</td><td><code class="method">Execute(code → result)</code></td><td>执行 JS 代码</td></tr>
+<tr><td>3</td><td><code class="method">Eval(expression → result)</code></td><td>求值 JS 表达式</td></tr>
+<tr><td>4</td><td><code class="method">CallFunc(name, args → result)</code></td><td>调用 JS 函数</td></tr>
+<tr><td>5</td><td><code class="method">Run(→ result)</code></td><td>运行引擎</td></tr>
+<tr><td>6</td><td><code class="method">AddObject(name, obj)</code></td><td>添加宿主对象</td></tr>
+<tr><td>7</td><td><code class="method">get_Timeout(→ ms)</code></td><td>获取超时时间</td></tr>
+<tr><td>8</td><td><code class="method">put_Timeout(ms)</code></td><td>设置超时时间</td></tr>
+<tr><td>9</td><td><code class="method">get_LastError(→ desc)</code></td><td>获取最后错误描述</td></tr>
+<tr><td>10</td><td><code class="method">get_LastErrorLine(→ line)</code></td><td>获取错误行号</td></tr>
+<tr><td>11</td><td><code class="method">get_LastErrorColumn(→ col)</code></td><td>获取错误列号</td></tr>
+<tr><td>12</td><td><code class="method">Reset()</code></td><td>重置引擎</td></tr>
+<tr><td>13</td><td><code class="method">SetConsoleCallback(callback)</code></td><td>设置控制台回调</td></tr>
+</tbody></table>
+<p style="margin-top:12px;font-size:0.9em;color:var(--text-muted);">引擎内部注入的 JS 全局对象详见 <code>AI_KnowledgeBase/JScriptEngine.md</code></p>
+</div></section>
+
+<!-- ===================== 系统/热键/对话框 ===================== -->
+<section id="s-sys">
+<div class="section-header"><h2>🛠️ 系统/热键/对话框 <span class="badge purple">16 方法</span></h2></div>
+<div class="section-body">
+<div class="cat-header">▸ ISystemOperation (1)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">ExecuteCmdSys</code></td><td>执行系统命令</td></tr>
+</tbody></table>
+<div class="cat-header">▸ IGlobalHotkeyOperation (5)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">HotkeyGlobalRegister</code></td><td>注册全局热键</td></tr>
+<tr><td>2</td><td><code class="method">HotkeyGlobalUnregister</code></td><td>注销全局热键</td></tr>
+<tr><td>3</td><td><code class="method">HotkeyGlobalUnregisterAll</code></td><td>注销所有全局热键</td></tr>
+<tr><td>4</td><td><code class="method">HotkeyGlobalPeek</code></td><td>查看全局热键</td></tr>
+<tr><td>5</td><td><code class="method">HotkeyGlobalWait</code></td><td>等待全局热键</td></tr>
+</tbody></table>
+<div class="cat-header">▸ IWindowHotkeyOperation (3)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">HotkeyWindowRegister</code></td><td>注册窗口热键</td></tr>
+<tr><td>2</td><td><code class="method">HotkeyWindowUnregister</code></td><td>注销窗口热键</td></tr>
+<tr><td>3</td><td><code class="method">HotkeyWindowUnregisterAll</code></td><td>注销所有窗口热键</td></tr>
+</tbody></table>
+<div class="cat-header">▸ IDialogOperation (3)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">DialogOpenFile</code></td><td>打开文件对话框</td></tr>
+<tr><td>2</td><td><code class="method">DialogSaveFile</code></td><td>保存文件对话框</td></tr>
+<tr><td>3</td><td><code class="method">DialogOpenFiles</code></td><td>打开多个文件对话框</td></tr>
+</tbody></table>
+<div class="cat-header">▸ IDynamicClassNameOperation (4)</div>
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">DynClassRegister</code></td><td>注册动态类名</td></tr>
+<tr><td>2</td><td><code class="method">DynClassUnregister</code></td><td>注销动态类名</td></tr>
+<tr><td>3</td><td><code class="method">DynClassUnregisterAll</code></td><td>注销所有动态类名</td></tr>
+<tr><td>4</td><td><code class="method">DynClassSetEnabled</code></td><td>启用/禁用动态类名</td></tr>
+</tbody></table>
+</div></section>
+
+<!-- ===================== 菜单操作 ===================== -->
+<section id="s-menu">
+<div class="section-header"><h2>📋 IMenuOperation <span class="badge green">15 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>#</th><th>方法名</th><th>说明</th></tr></thead><tbody>
+<tr><td>1</td><td><code class="method">MenuClick</code></td><td>点击菜单项</td></tr>
+<tr><td>2</td><td><code class="method">MenuGetID</code></td><td>获取菜单项 ID</td></tr>
+<tr><td>3</td><td><code class="method">MenuClear</code></td><td>清空菜单</td></tr>
+<tr><td>4</td><td><code class="method">MenuRedraw</code></td><td>重绘菜单</td></tr>
+<tr><td>5</td><td><code class="method">MenuDelete</code></td><td>删除菜单项</td></tr>
+<tr><td>6</td><td><code class="method">MenuGetCount</code></td><td>获取菜单项数量</td></tr>
+<tr><td>7</td><td><code class="method">MenuGetHandle</code></td><td>获取菜单句柄</td></tr>
+<tr><td>8</td><td><code class="method">MenuGetSubHandle</code></td><td>获取子菜单句柄</td></tr>
+<tr><td>9</td><td><code class="method">MenuAddIcon</code></td><td>添加图标到菜单项</td></tr>
+<tr><td>10</td><td><code class="method">MenuGetTitle</code></td><td>获取菜单项标题</td></tr>
+<tr><td>11</td><td><code class="method">MenuModifyTitle</code></td><td>修改菜单项标题</td></tr>
+<tr><td>12</td><td><code class="method">MenuAdd</code></td><td>添加菜单项</td></tr>
+<tr><td>13</td><td><code class="method">MenuEnum</code></td><td>枚举菜单项</td></tr>
+<tr><td>14</td><td><code class="method">MenuEnumSubMenu</code></td><td>枚举子菜单</td></tr>
+<tr><td>15</td><td><code class="method">MenuClickByTitle</code></td><td>按标题点击菜单项</td></tr>
+</tbody></table></div></section>
+
+<!-- ===================== 转发命名空间 ===================== -->
+<section id="s-extra">
+<div class="section-header"><h2>📋 转发命名空间汇总 <span class="badge">总计 143+ 方法</span></h2></div>
+<div class="section-body">
+<table><thead><tr><th>前缀</th><th>源接口</th><th>方法数</th><th>方法列表</th></tr></thead><tbody>
+<tr><td><code>FH*</code></td><td>CFileHandleOperation</td><td>11</td><td>FHOpen, FHClose, FHSeek, FHGetPosition, FHToBegin, FHToEnd, FHWriteBytes, FHWriteText, FHReadBytes, FHReadText, FHGetSize</td></tr>
+<tr><td><code>Dir*</code></td><td>CDirectoryOperation</td><td>22</td><td>DirCreate, DirDelete, DirExists, DirGetSubDirectoryCount, DirCopy, DirMove, DirGetCreateTime, DirGetModifyTime, DirGetAccessTime, DirGetShortPath, DirGetFullPath, DirGetShortName, DirGetDirName, DirMoveByCmd, IsEmptyDir, HasSubDir, GetTempPathDir, GetSystem32Dir, GetSysWOW64Dir, DirGetParentPath, DirGetSpecialFolder, DirEnum</td></tr>
+<tr><td><code>*Api</code></td><td>CFileOperationEx</td><td>39</td><td>GetFileNameApi, CopyFileApi, GetExtensionApi, OpenFileApi, CloseFileApi, SeekFileApi, GetFilePositionApi, ToBeginApi, ToEndApi, WriteBytesApi, WriteTextApi, ReadBytesApi, ReadTextApi, GetSizeByHandleApi, IsDirectoryApi, GetDirectoryApi, FileExistsApi, GetAttributesApi, SetAttributesApi, RemoveAttributesApi, GetFileSizeApi, DeleteFileApi, OperateFileApi, DeleteToRecycleBinApi, ForceDeleteApi, MoveFileApi, EnumFilesApi, GetFileVersionApi, ToShortPathApi, ToLongPathApi, GetTextEncodingApi, ExecuteFileApi, GetMimeTypeApi, ExtractIconApi, ExtractIconHandleApi, GetIconFromHandleApi, FindFirstApi, FindNextApi, FindCloseApi</td></tr>
+<tr><td><code>Sys*</code></td><td>CSystemOperation</td><td>1</td><td>ExecuteCmdSys</td></tr>
+<tr><td><code>HotkeyGlobal*</code></td><td>CGlobalHotkeyOperation</td><td>5</td><td>HotkeyGlobalRegister, HotkeyGlobalUnregister, HotkeyGlobalUnregisterAll, HotkeyGlobalPeek, HotkeyGlobalWait</td></tr>
+<tr><td><code>HotkeyWindow*</code></td><td>CWindowHotkeyOperation</td><td>3</td><td>HotkeyWindowRegister, HotkeyWindowUnregister, HotkeyWindowUnregisterAll</td></tr>
+<tr><td><code>Dialog*</code></td><td>CDialogOperation</td><td>3</td><td>DialogOpenFile, DialogSaveFile, DialogOpenFiles</td></tr>
+<tr><td><code>DynClass*</code></td><td>CDynamicClassNameOperation</td><td>4</td><td>DynClassRegister, DynClassUnregister, DynClassUnregisterAll, DynClassSetEnabled</td></tr>
+<tr><td><code>Menu*</code></td><td>CMenuOperation</td><td>15</td><td>MenuClick, MenuGetID, MenuClear, MenuRedraw, MenuDelete, MenuGetCount, MenuGetHandle, MenuGetSubHandle, MenuAddIcon, MenuGetTitle, MenuModifyTitle, MenuAdd, MenuEnum, MenuEnumSubMenu, MenuClickByTitle</td></tr>
+<tr><td><code>Map*</code></td><td>CFileMapping</td><td>13</td><td>MapConstGet, MapGetMax, MapGetPoint, MapRelasePoint, MapWriteBin, MapReadBin, MapWriteIntP, MapReadIntP, MapClose, MapCreate, MapOpen, MapReadText, MapWriteText</td></tr>
+<tr><td><code>*FSO</code></td><td>CFSOOperation</td><td>25</td><td>DriveExistsFSO, GetDriveInfoFSO, EnumDrivesFSO, FolderExistsFSO, CreateFolderFSO, DeleteFolderFSO, CopyFolderFSO, MoveFolderFSO, GetFolderInfoFSO, FileExistsFSO, DeleteFileFSO, CopyFileFSO, MoveFileFSO, GetFileInfoFSO, GetSpecialFolderFSO, GetTempNameFSO, GetAbsolutePathNameFSO, GetBaseNameFSO, GetExtensionNameFSO, GetFileNameFSO, GetParentFolderNameFSO, GetShortPathFSO, CreateTextFileFSO, OpenTextFileFSO, AppendToFileFSO</td></tr>
+</tbody></table>
+</div></section>
+
+<footer>LeyBc COM Library · 38 Interfaces · 37 CLSID Components · 641 DISPID Methods · 1000+ 功能点</footer>
+</div></body></html>
